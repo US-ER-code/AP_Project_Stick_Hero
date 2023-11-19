@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+
+<AnchorPane prefHeight="516.0" prefWidth="557.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ap_project_stick_hero.MenuController">
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+   <children>
+      <Label alignment="CENTER" layoutX="179.0" layoutY="82.0" prefHeight="98.0" prefWidth="148.0" text="PLAY" textAlignment="CENTER" textFill="#f6ff00">
+         <font>
+            <Font name="Bell MT" size="40.0" />
+         </font>
+      </Label>
+      <Button layoutX="215.0" layoutY="87.0" mnemonicParsing="false" onAction="#startGame" opacity="0.0" prefHeight="98.0" prefWidth="75.0" text="Start Button" textFill="WHITE" />
+      <Ellipse blendMode="RED" fill="#ff1f1f00" layoutX="252.0" layoutY="131.0" radiusX="150.0" radiusY="40.0" smooth="false" stroke="#ebff0a" strokeLineCap="ROUND" strokeLineJoin="ROUND" style="-fx-stroke-width: 10;" />
+      <Label alignment="CENTER" layoutX="136.0" layoutY="205.0" prefHeight="98.0" prefWidth="241.0" text="HIGH SCORE" textAlignment="CENTER" textFill="#e4ec00">
+         <font>
+            <Font name="Bell MT" size="30.0" />
+         </font>
+      </Label>
+      <Button fx:id="displayhighscore" layoutX="216.0" layoutY="210.0" mnemonicParsing="false" onAction="#showhighscore" opacity="0.0" prefHeight="98.0" prefWidth="75.0" text="Highscore" textFill="WHITE" />
+      <Ellipse blendMode="RED" fill="#ff1f1f00" layoutX="253.0" layoutY="254.0" radiusX="150.0" radiusY="40.0" smooth="false" stroke="#ebff0a" strokeLineCap="ROUND" strokeLineJoin="ROUND" style="-fx-stroke-width: 10;" />
+      <Label alignment="CENTER" layoutX="181.0" layoutY="330.0" prefHeight="98.0" prefWidth="148.0" text="EXIT" textAlignment="CENTER" textFill="#e4ec00">
+         <font>
+            <Font name="Bell MT" size="40.0" />
+         </font>
+      </Label>
+      <Button fx:id="exit" layoutX="217.0" layoutY="335.0" mnemonicParsing="false" onAction="#endgame" onMouseDragOver="#showhighscore" opacity="0.0" prefHeight="98.0" prefWidth="75.0" text="Exit" textFill="WHITE" />
+      <Ellipse blendMode="RED" fill="#ff1f1f00" layoutX="254.0" layoutY="379.0" radiusX="150.0" radiusY="40.0" smooth="false" stroke="#ebff0a" strokeLineCap="ROUND" strokeLineJoin="ROUND" style="-fx-stroke-width: 10;" />
+      <Circle fx:id="highlight_start" fill="#ffe21f" layoutX="446.0" layoutY="131.0" radius="15.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle fx:id="highlight_score" fill="#ffe21f" layoutX="446.0" layoutY="254.0" radius="15.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle fx:id="highlight_exit" fill="#ffe21f" layoutX="446.0" layoutY="379.0" radius="15.0" stroke="BLACK" strokeType="INSIDE" />
+   </children>
+</AnchorPane>

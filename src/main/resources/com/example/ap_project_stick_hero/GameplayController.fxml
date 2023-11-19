@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="533.0" prefWidth="600.0" style="-fx-background-color: orange;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Rectangle fx:id="player" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="43.0" layoutX="89.0" layoutY="290.0" stroke="DODGERBLUE" strokeType="INSIDE" width="40.0" />
+      <Rectangle fx:id="platform" arcHeight="5.0" arcWidth="5.0" height="200.0" layoutY="333.0" stroke="BLACK" strokeType="INSIDE" width="130.0" />
+      <Rectangle fx:id="platformCentre" arcHeight="5.0" arcWidth="5.0" fill="#ff1f1f" height="10.0" layoutX="56.0" layoutY="333.0" stroke="#fc0707" strokeType="INSIDE" width="19.0" />
+   </children>
+</AnchorPane>

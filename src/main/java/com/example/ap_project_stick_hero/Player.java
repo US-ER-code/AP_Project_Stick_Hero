@@ -1,0 +1,70 @@
+package com.example.ap_project_stick_hero;
+
+import javafx.scene.Parent;
+
+public class Player {
+    //private Parent character;
+    private int currentScore;
+    private int highScore;
+    private int numBerries;
+    private int inGame;//1 if in a game 0 if not in game
+    private int flipped;//1 if character flipped on a stick, 0 if not flipped
+    public Player(){
+        //this.character = character;
+        this.currentScore = 0;
+        this.highScore = 0;
+        this.numBerries = 0;
+        this.inGame = 1;
+        this.flipped = 0;
+    }
+    public void revive(){
+        this.numBerries -= 10;
+        this.inGame = 1;
+    }
+
+    public int getInGame() {
+        return inGame;
+    }
+
+    public void setInGame(int inGame) {
+        this.inGame = inGame;
+    }
+
+    public int getNumBerries() {
+        return numBerries;
+    }
+
+    public void setNumBerries(int numBerries) {
+        this.numBerries = numBerries;
+    }
+
+    public int getHighScore() {
+        return highScore;
+    }
+
+    public void setHighScore(int highScore) {
+        this.highScore = highScore;
+    }
+
+    public int getCurrentScore() {
+        return currentScore;
+    }
+
+    public void setCurrentScore(int currentScore) {
+        this.currentScore = currentScore;
+    }
+
+    public int getFlipped() {
+        return flipped;
+    }
+
+    public void setFlipped(int flipped) {
+        this.flipped = flipped;
+    }
+    public void flipCharacter(){
+        this.flipped = 1;
+    }
+    public void unFlipCharacter(){
+        this.flipped = 0;
+    }
+}
