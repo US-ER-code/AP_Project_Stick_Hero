@@ -18,28 +18,49 @@ public class MenuController {
     private Parent root;
     @FXML
     public void startGame(ActionEvent event) throws IOException {
-        this.root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("GameplayController.fxml")));
-        this.stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        this.stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("GameplayController.fxml"));
+        Parent root = loader.load();
+//        GameplayController gameplayController = loader.getController();
+//        gameplayController.initialize(event);
+
         this.scene = new Scene(root);
-        Button exit = new Button();
-        exit.setOnAction(actionEvent ->{
-            endgame();
-        });
-        root.getChildrenUnmodifiable().add(exit);
         this.stage.setScene(scene);
         this.stage.show();
     }
     @FXML
-    public void showhighscore(ActionEvent e) throws IOException{
-        root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("Highscore.fxml")));
-        Stage stage = new Stage();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+    public void showHighScore(ActionEvent event) throws IOException{
+        this.root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("Highscore.fxml")));
+        this.stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        this.scene = new Scene(root);
+        this.stage.setScene(scene);
+        this.stage.show();
     }
 
     @FXML
-    public void endgame(){
+    public void loadGame(ActionEvent event) throws IOException{
+        this.root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("LoadGameController.fxml")));
+        this.stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        this.scene = new Scene(root);
+        this.stage.setScene(scene);
+        this.stage.show();
+    }
+
+    @FXML
+    public void endGame(){
         System.exit(0);
+    }
+
+    public Parent getRoot() {
+        return root;
+    }
+
+    public Scene getScene() {
+        return scene;
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 }

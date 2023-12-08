@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="533.0" prefWidth="600.0" style="-fx-background-color: orange;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMousePressed="#stickBuild" onMouseReleased="#stopBuildingStick" prefHeight="533.0" prefWidth="386.0" style="-fx-background-color: orange;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ap_project_stick_hero.GameplayController">
    <children>
-      <Rectangle fx:id="player" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="43.0" layoutX="89.0" layoutY="290.0" stroke="DODGERBLUE" strokeType="INSIDE" width="40.0" />
-      <Rectangle fx:id="platform" arcHeight="5.0" arcWidth="5.0" height="200.0" layoutY="333.0" stroke="BLACK" strokeType="INSIDE" width="130.0" />
-      <Rectangle fx:id="platformCentre" arcHeight="5.0" arcWidth="5.0" fill="#ff1f1f" height="10.0" layoutX="56.0" layoutY="333.0" stroke="#fc0707" strokeType="INSIDE" width="19.0" />
+      <Rectangle fx:id="character" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="25.0" layoutX="14.0" layoutY="343.0" stroke="DODGERBLUE" strokeType="INSIDE" width="23.0" />
+      <Rectangle fx:id="startPlatform" arcHeight="5.0" arcWidth="5.0" height="165.0" layoutY="368.0" stroke="BLACK" strokeType="INSIDE" width="40.0" />
+      <Circle fill="#e8ff00" layoutX="163.0" layoutY="59.0" radius="45.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+      <Label layoutX="145.0" layoutY="59.0" text="Score" textFill="#00000092">
+         <font>
+            <Font size="39.0" />
+         </font>
+      </Label>
+      <Label layoutX="181.0" layoutY="115.0" prefHeight="16.0" prefWidth="6.0" text="0" textFill="#00000092">
+         <font>
+            <Font size="42.0" />
+         </font>
+      </Label>
+      <Rectangle fx:id="stick" arcHeight="5.0" arcWidth="5.0" layoutX="35.0" layoutY="368.0" onMousePressed="#stickBuild" stroke="BLACK" strokeType="INSIDE" width="5.0" />
+      <Rectangle fx:id="endPlatform" arcHeight="5.0" arcWidth="5.0" height="200.0" layoutX="40.0" layoutY="368.0" stroke="BLACK" strokeType="INSIDE" width="10.0" />
    </children>
 </AnchorPane>
