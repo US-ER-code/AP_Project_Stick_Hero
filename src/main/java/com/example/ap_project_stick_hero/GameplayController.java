@@ -1,20 +1,17 @@
 package com.example.ap_project_stick_hero;
-import javafx.animation.Animation;
+import javafx.animation.*;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.SequentialTransition;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -22,14 +19,15 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.IOException;
-import java.util.Objects;
+import java.io.*;
 import java.util.Random;
 
 public class GameplayController {
     double MAX_STICK_HEIGHT = 1000;
     private double gap;
     private String gameOverMessage;
+    private boolean isSpacebarPressed = false;
+
     @FXML
     private Rectangle stick;
     private Stage stage;
@@ -39,6 +37,10 @@ public class GameplayController {
     @FXML
     private Label scoreBoard;
     @FXML
+    private Label berryCount;
+    @FXML
+    private Node berry;
+    @FXML
     private Rectangle startPlatform;
     @FXML
     private Rectangle endPlatform;
@@ -46,6 +48,8 @@ public class GameplayController {
     private Node character;
     private Game game;
     private Rectangle nextPlatform;
+    private GameLoop gameLoop;
+    private boolean isWalking = false;
     private int built = 0;
     private boolean isBuildingStick = false;  // Flag to track stick building
     private boolean stickRotated = false;
@@ -58,6 +62,21 @@ public class GameplayController {
         this.stickRotated = false;
         this.stickBuildDuration = 0.0;
     }
+//    @FXML
+//    private void handleKeyPress(KeyEvent event) {
+//        System.out.println("Key Pressed: " + event.getCode());
+//        if (event.getCode() == KeyCode.SPACE) {
+//            isSpacebarPressed = true;
+//            flipCharacter(event);
+//        }
+//    }
+//    @FXML
+//    private void handleKeyRelease(KeyEvent event) {
+//        System.out.println("Key Released: " + event.getCode());
+//        if (event.getCode() == KeyCode.SPACE) {
+//            isSpacebarPressed = false;
+//        }
+//    }
     public GameplayController(){
     }
     public double getStickBuildDuration() {
@@ -83,7 +102,7 @@ public class GameplayController {
             // Use Platform.runLater() for UI updates
             boolean isValidStick = checkValidStick();
             this.walkStick(() -> {
-                if (isValidStick) {
+                if (isValidStick && this.player.getFlipped() != 1) {
                     this.proceedToNextStage();
                 } else {
                     Stick stick1 = new Stick(this.stick);
@@ -92,6 +111,7 @@ public class GameplayController {
                         this.displayGameOver();
                     });
                 }
+                this.isWalking = false;
             });
         });
 //        this.walkStick();
@@ -141,7 +161,6 @@ public class GameplayController {
     @FXML
     public void stickBuild(MouseEvent event){
         this.startBuildingStick(event);
-
     }
     private void createRandomPlatform() {
         // Set the initial position of the platform
@@ -158,7 +177,7 @@ public class GameplayController {
         double distance = minDistance + (random.nextDouble() * (maxDistance - minDistance));
         double height = 165;
         double width = 20 + (random.nextDouble() * (150 - 20));
-
+        double berryPosition = minDistance + (random.nextDouble()*(distance-minDistance));
         // Calculate the new platform's position
         double newPlatformX = distance;
         double newPlatformY = initialPlatformY;
@@ -170,11 +189,14 @@ public class GameplayController {
         this.endPlatform.setX(newPlatformX);
         this.endPlatform.setY(newPlatformY);
         this.endPlatform.setFill(Color.BLACK);
+        this.berry.setLayoutX(berryPosition);
     }
     @FXML
     public void initialize(){
         this.player = new Player(this.character);
         this.createRandomPlatform();
+        this.gameLoop = new GameLoop(this);
+        gameLoop.start();
     }
     private void startStickRotation(Runnable callback) {
         // Set up a timeline to rotate the stick
@@ -224,6 +246,7 @@ public class GameplayController {
     }
 
     private void walkStick(Runnable callback){
+        this.isWalking = true;
         Stick stick1 = new Stick(this.stick);
         this.sequentialTransition = new SequentialTransition();
         Duration walkDuration = Duration.seconds(2);
@@ -265,6 +288,7 @@ public class GameplayController {
         this.stickRotated = false;
 
     }
+
     private void proceedToNextStage(){
         Stick stick1 = new Stick(this.stick);
         if (this.checkValidStick()) {
@@ -281,6 +305,7 @@ public class GameplayController {
                     this.resetFlags();
                     this.stickToDefault();
                     this.createRandomPlatform();
+                    this.character.setTranslateY(0);
 
                 });
 
@@ -314,7 +339,7 @@ public class GameplayController {
             //this.gameplayController.walkStick();
         }
     }
-    private void displayGameOver() {
+    private void displayGameOver(){
         try {
             this.stage = (Stage) this.stick.getScene().getWindow(); // Assuming stick is part of the scene
 
@@ -323,7 +348,15 @@ public class GameplayController {
 
             // Access the controller and set the message if needed
             GameOverController gameOverController = loader.getController();
-
+            PrintWriter out = null;
+            try{
+                out = new PrintWriter("CurrentScore.txt");
+                out.println(this.player.getCurrentScore());
+            }finally {
+                if(out != null){
+                    out.close();
+                }
+            }
             this.scene = new Scene(root);
             this.stage.setScene(scene);
             this.stage.show();
@@ -354,5 +387,57 @@ public class GameplayController {
     public void saveGame() throws IOException,ClassNotFoundException {
         Game g = new Game();
         g.saveGame(character);
+    }
+
+    @FXML
+    public void flipCharacter(MouseEvent event ){
+        System.out.println("flipping");
+        if(this.isWalking){
+            this.character.setRotationAxis(new Point3D(1,0,0));
+            this.character.setRotate(180);
+            if(this.character.getTranslateY() == 0) {
+                this.character.setTranslateY(this.character.getBoundsInLocal().getHeight());
+            }else this.character.setTranslateY(0);
+            System.out.println(this.character.getBoundsInLocal().getHeight());
+            this.player.flip();
+            System.out.println("here");
+        }
+        System.out.println("flipped");
+    }
+    @FXML
+    public void flip(MouseEvent event){
+        this.flipCharacter(event);
+    }
+    public void collectBerry(){
+        this.player.collectBerry();
+        this.berry.setLayoutX(1000);
+        this.berryCount.setText(String.valueOf(this.player.getNumBerries()));
+    }
+    private class GameLoop extends AnimationTimer {
+
+        GameplayController g;
+        GameLoop(GameplayController gameplayController){
+            this.g = gameplayController;
+        }
+        @Override
+
+        public void handle(long now) {
+            // Code to be executed in each frame
+            Bounds bounds1 = g.character.getBoundsInParent();
+            Bounds bounds2 = g.berry.getBoundsInParent();
+
+            if (g.player.getFlipped() == 1 && bounds1.intersects(bounds2)) {
+                g.collectBerry(); // Render the game
+                System.out.println("Berry collected");
+            }
+        }
+
+//        private void updateGame() {
+//            // Update game logic here
+//        }
+//
+//        private void renderGame() {
+//            // Render the game here
+//        }
     }
 }

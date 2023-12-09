@@ -27,7 +27,7 @@ public class Game implements Serializable{
     }
     public void loadGame(Node node) throws IOException,ClassNotFoundException{
         ObjectInputStream ois = null;
-        Player p = new Player(node);
+        Player p = null;
         try{
             ois = new ObjectInputStream(new FileInputStream("Game.txt"));
             p = (Player)ois.readObject();

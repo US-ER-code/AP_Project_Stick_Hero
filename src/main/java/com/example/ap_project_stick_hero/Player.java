@@ -102,9 +102,8 @@ public class Player {
         //this.currentStick = new Stick(length);
     }
     public void flip() {
-        // Flip the character only if it is currently walking
-        if (this.playerAnimation.isWalking()) {
-            this.playerAnimation.flipCharacter();
-        }
+        if(this.flipped == 0){
+            this.flipped = 1;
+        }else this.flipped = 0;
     }
 }

@@ -12,12 +12,27 @@
             <Font size="66.0" />
          </font>
       </Label>
-      <Label layoutX="167.0" layoutY="110.0" text="SCORE">
+      <Label layoutX="144.0" layoutY="110.0" text="HGH SCORE">
          <font>
             <Font size="19.0" />
          </font>
       </Label>
       <Button fx:id="goHomeButton" layoutX="108.0" layoutY="337.0" mnemonicParsing="false" onAction="#goHome" prefHeight="58.0" prefWidth="58.0" text="Menu" />
       <Button fx:id="restartButton" layoutX="220.0" layoutY="338.0" mnemonicParsing="false" onAction="#startGame" prefHeight="58.0" prefWidth="58.0" text="Restart" />
+      <Label fx:id="highScoreLabel" alignment="CENTER" layoutX="146.0" layoutY="138.0" prefHeight="28.0" prefWidth="99.0" text="Label">
+         <font>
+            <Font size="23.0" />
+         </font>
+      </Label>
+      <Label layoutX="140.0" layoutY="172.0" text="YOUR SCORE">
+         <font>
+            <Font size="19.0" />
+         </font>
+      </Label>
+      <Label fx:id="currentScoreLabel" layoutX="168.0" layoutY="200.0" text="Label">
+         <font>
+            <Font size="23.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
