@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,9 +18,14 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class GameOverController {
+    private Player player;
     private Stage stage;
     private Parent root;
     private Scene scene;
+    @FXML
+    private Label reviveMessage;
+    @FXML
+    private Button reviveButton;
     @FXML
     private Button goHomeButton;
     @FXML
@@ -30,12 +36,8 @@ public class GameOverController {
     private int currentScore;
     @FXML
     private Label highScoreLabel;
-//    public GameOverController(Player player){
-//        if(player.getCurrentScore()>this.highScore){
-//            this.highScore = player.getHighScore();
-//        }
-//        this.currentScore = player.getCurrentScore();
-//    }
+    @FXML
+    private Label berryCount;
     public void goHome(ActionEvent event) throws IOException {
         this.root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("MenuController.fxml")));
         this.stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
@@ -44,39 +46,28 @@ public class GameOverController {
         this.stage.show();
     }
     @FXML
-    public void initialize(){
-//        Scanner in = null;
-//        Scanner in1 = null;
-//        PrintWriter printWriter = null;
-//        int n;
-//        int high;
-//        try{
-//            in = new Scanner("CurrentScore.txt");
-//            n = in.nextInt();
-//            in1 = new Scanner("Highscore.txt");
-//            high = in1.nextInt();
-//            if(high < n){
-//                high = n;
-//                printWriter = new PrintWriter("Highscore.txt");
-//                printWriter.println(high);
-//            }
-//        } catch (FileNotFoundException e) {
-//            throw new RuntimeException(e);
-//        }finally {
-//            if (in != null) {
-//                in.close();
-//            }
-//            if (in1 != null) {
-//                in1.close();
-//            }
-//            if (printWriter != null) {
-//                printWriter.close();
-//            }
-//        }
-//        this.highScore = high;
-//        this.currentScore = n;
+    public void initialize() throws FileNotFoundException {
         this.currentScoreLabel.setText(String.valueOf(this.currentScore));
         this.highScoreLabel.setText(String.valueOf(this.highScore));
+        Scanner countBerriesScanner = null;
+        Scanner highScoreScanner = null;
+        int n,high;
+        try {
+            countBerriesScanner = new Scanner(new File("BerryCount.txt"));
+            highScoreScanner = new Scanner(new File("Highscore.txt"));
+            n = countBerriesScanner.nextInt();
+            high = highScoreScanner.nextInt();
+        }finally {
+            if(countBerriesScanner!= null){
+                countBerriesScanner.close();
+            }
+            if(highScoreScanner != null){
+                highScoreScanner.close();
+            }
+        }
+        this.berryCount.setText(String.valueOf(n));
+        this.highScoreLabel.setText(String.valueOf(high));
+
     }
     @FXML
     public void startGame(ActionEvent event) throws IOException {
@@ -84,9 +75,6 @@ public class GameOverController {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GameplayController.fxml"));
         Parent root = loader.load();
-//        GameplayController gameplayController = loader.getController();
-//        gameplayController.initialize(event);
-
         this.scene = new Scene(root);
         this.stage.setScene(scene);
         this.stage.show();
@@ -98,9 +86,55 @@ public class GameOverController {
 
     public void setCurrentScore(int currentScore) {
         this.currentScore = currentScore;
+        this.currentScoreLabel.setText(String.valueOf(this.currentScore));
     }
 
     public int getHighScore() {
         return highScore;
+    }
+
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+    @FXML
+    public void revivePlayer(ActionEvent event) throws IOException {
+        Scanner countBerriesScanner = null;
+        int n;
+        try {
+            countBerriesScanner = new Scanner(new File("BerryCount.txt"));
+            n = countBerriesScanner.nextInt();
+        }finally {
+            if(countBerriesScanner!= null){
+                countBerriesScanner.close();
+            }
+        }
+        if(n<5){
+            reviveMessage.setText("(Not enough berries. Need 5 or more to revive.)");
+        }else {
+            this.stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("GameplayController.fxml"));
+            Parent root = loader.load();
+            GameplayController gameplayController = loader.getController();
+            gameplayController.setScoreBoardText(this.player.getCurrentScore());
+            n-=5;
+            PrintWriter printWriter = null;
+            try {
+                printWriter = new PrintWriter("BerryCount.txt");
+                printWriter.println(n);
+            }finally {
+                if(printWriter != null){
+                    printWriter.close();
+                }
+            }
+            this.scene = new Scene(root);
+            this.stage.setScene(scene);
+            this.stage.show();
+        }
     }
 }

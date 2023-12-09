@@ -21,6 +21,7 @@ import javafx.util.Duration;
 
 import java.io.*;
 import java.util.Random;
+import java.util.Scanner;
 
 public class GameplayController {
     double MAX_STICK_HEIGHT = 1000;
@@ -34,8 +35,15 @@ public class GameplayController {
     private Scene scene;
     private Parent root;
     private Player player;
+
     @FXML
     private Label scoreBoard;
+
+    public void setScoreBoardText(int score) {
+        this.scoreBoard.setText(String.valueOf(score));
+        this.player.setCurrentScore((int)score);
+    }
+
     @FXML
     private Label berryCount;
     @FXML
@@ -54,7 +62,6 @@ public class GameplayController {
     private boolean isBuildingStick = false;  // Flag to track stick building
     private boolean stickRotated = false;
     private double stickBuildDuration = 0.0;   // Duration for stick building in seconds
-    private static final double MAX_STICK_LENGTH = 100.0;  // Adjust as needed
     private SequentialTransition sequentialTransition;
     private void resetFlags(){
         this.built = 0;
@@ -62,21 +69,6 @@ public class GameplayController {
         this.stickRotated = false;
         this.stickBuildDuration = 0.0;
     }
-//    @FXML
-//    private void handleKeyPress(KeyEvent event) {
-//        System.out.println("Key Pressed: " + event.getCode());
-//        if (event.getCode() == KeyCode.SPACE) {
-//            isSpacebarPressed = true;
-//            flipCharacter(event);
-//        }
-//    }
-//    @FXML
-//    private void handleKeyRelease(KeyEvent event) {
-//        System.out.println("Key Released: " + event.getCode());
-//        if (event.getCode() == KeyCode.SPACE) {
-//            isSpacebarPressed = false;
-//        }
-//    }
     public GameplayController(){
     }
     public double getStickBuildDuration() {
@@ -96,10 +88,8 @@ public class GameplayController {
     }
     @FXML
     private void stopBuildingStick() throws InterruptedException {
-        System.out.println("Mouse released");
         isBuildingStick = false;
         this.startStickRotation(()-> {
-            // Use Platform.runLater() for UI updates
             boolean isValidStick = checkValidStick();
             this.walkStick(() -> {
                 if (isValidStick && this.player.getFlipped() != 1) {
@@ -114,15 +104,13 @@ public class GameplayController {
                 this.isWalking = false;
             });
         });
-//        this.walkStick();
-//        this.proceedToNextStage();
+
     }
     @FXML
     private void startBuildingStick(MouseEvent event) {
         if(this.built == 1){
             return;
         }
-        System.out.println("Mouse pressed");
         this.isBuildingStick = true;
 
         // Store the initial y-coordinate
@@ -154,7 +142,6 @@ public class GameplayController {
 
             // Increment the build duration
             this.stickBuildDuration += 0.1;
-            // Check if the maximum height is reached
 
         }
     }
@@ -172,16 +159,15 @@ public class GameplayController {
         double maxDistance = 345.0;
 
         // Generate a random distance for the new platform
-        // Generate a random distance for the new platform
         Random random = new Random();
         double distance = minDistance + (random.nextDouble() * (maxDistance - minDistance));
         double height = 165;
         double width = 20 + (random.nextDouble() * (150 - 20));
+        //Calculate a position for the berry
         double berryPosition = minDistance + (random.nextDouble()*(distance-minDistance));
         // Calculate the new platform's position
         double newPlatformX = distance;
         double newPlatformY = initialPlatformY;
-        this.gap = newPlatformX-width/2-this.startPlatform.getWidth();
 
         // Update the platform position
         this.endPlatform.setHeight(height);
@@ -210,7 +196,7 @@ public class GameplayController {
                 rotateStick();
             }
         }));
-        rotationTimeline.setCycleCount(10); // Adjust the cycle count as needed
+        rotationTimeline.setCycleCount(10);
         rotationTimeline.setOnFinished(event -> callback.run());
 
         // Add the rotation timeline to the sequential transition
@@ -221,7 +207,6 @@ public class GameplayController {
     }
     private void rotateStick() {
         // Rotate the stick by 9 degrees per frame
-
         Rotate rotation = new Rotate(9);
 
         // Set the pivot point at the bottom center of the stick
@@ -240,8 +225,6 @@ public class GameplayController {
     }
 
     private void stopStickRotation() {
-        // Optionally, you can perform any cleanup or additional actions here
-        System.out.println("Stick rotation completed!");
         this.stickRotated = true;
     }
 
@@ -270,11 +253,9 @@ public class GameplayController {
 
         if (this.endPlatform.getX() < stickLength && this.endPlatform.getX()+this.endPlatform.getWidth() >= stickLength) {
             // Stick's end is within the bounds of the platform
-            System.out.println("Valid");
             return true;
         } else {
             // Stick's end is outside the bounds of the platform
-            System.out.println("Invalid");
             return false;
         }
     }
@@ -294,88 +275,69 @@ public class GameplayController {
         if (this.checkValidStick()) {
             this.player.setCurrentScore(this.player.getCurrentScore() + 1);
 
-            // Use Platform.runLater() for UI updates
             Platform.runLater(() -> {
                 this.scoreBoard.setText(String.valueOf(this.player.getCurrentScore()));
 
                 // Wait for the sequential transition to complete before resetting the character
                 this.sequentialTransition.setOnFinished(event -> {
                     this.stickBuildDuration = 0.0;
-                    this.character.setLayoutX(this.character.getLayoutX()-this.stick.getHeight()); // or the appropriate initial value
+                    this.character.setLayoutX(this.character.getLayoutX()-this.stick.getHeight());
                     this.resetFlags();
                     this.stickToDefault();
                     this.createRandomPlatform();
                     this.character.setTranslateY(0);
-
                 });
-
                 // Start the next animation
                 this.sequentialTransition.play();
             });
         }else {
             Platform.runLater(this::displayGameOver);
         }
-
     }
-    private class Proceed extends Thread{
-        private GameplayController gameplayController;
-        Proceed(GameplayController gameplayController){
-            this.gameplayController = gameplayController;
-        }
 
-        @Override
-        public void run() {
-            gameplayController.proceedToNextStage();
-        }
-    }
-    private class WalkStick extends Thread{
-        private GameplayController gameplayController;
-        WalkStick(GameplayController g){
-            this.gameplayController = g;
-        }
-
-        @Override
-        public void run() {
-            //this.gameplayController.walkStick();
-        }
-    }
     private void displayGameOver(){
         try {
-            this.stage = (Stage) this.stick.getScene().getWindow(); // Assuming stick is part of the scene
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("GameOverController.fxml"));
-            Parent root = loader.load();
-
-            // Access the controller and set the message if needed
-            GameOverController gameOverController = loader.getController();
+            this.stage = (Stage) this.stick.getScene().getWindow();
+            Scanner berryCountScanner = null;
+            Scanner highScoreScanner = null;
             PrintWriter out = null;
+            PrintWriter berryCountWriter = null;
+            PrintWriter highScoreWriter = null;
             try{
                 out = new PrintWriter("CurrentScore.txt");
+                berryCountScanner = new Scanner(new File("BerryCount.txt"));
+                highScoreScanner = new Scanner(new File("Highscore.txt"));
+                int high = highScoreScanner.nextInt();
+                if(this.player.getCurrentScore()>high){
+                    if(highScoreScanner != null){
+                        highScoreScanner.close();
+                    }
+                    highScoreWriter = new PrintWriter("Highscore.txt");
+                    highScoreWriter.println(this.player.getCurrentScore());
+                }
                 out.println(this.player.getCurrentScore());
+                int n = berryCountScanner.nextInt();
+                berryCountScanner.close();
+                berryCountWriter = new PrintWriter("BerryCount.txt");
+                berryCountWriter.println(n+this.player.getNumBerries());
             }finally {
                 if(out != null){
                     out.close();
                 }
+                if(berryCountWriter != null){
+                    berryCountWriter.close();
+                }
+                if(highScoreWriter != null){
+                    highScoreWriter.close();
+                }
             }
-            this.scene = new Scene(root);
-            this.stage.setScene(scene);
-            this.stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    @FXML
-    public void display_pause_menu() throws IOException {
-        try {
-            this.stage = (Stage) this.stick.getScene().getWindow(); // Assuming stick is part of the scene
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("pausemenu.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("GameOverController.fxml"));
             Parent root = loader.load();
 
-            // Access the controller and set the message if needed
-            pausemenu gamePauseController = loader.getController();
-
+            GameOverController gameOverController = loader.getController();
+            gameOverController.setCurrentScore(this.player.getCurrentScore());
+            gameOverController.setPlayer(this.player);
             this.scene = new Scene(root);
             this.stage.setScene(scene);
             this.stage.show();
@@ -391,18 +353,14 @@ public class GameplayController {
 
     @FXML
     public void flipCharacter(MouseEvent event ){
-        System.out.println("flipping");
         if(this.isWalking){
             this.character.setRotationAxis(new Point3D(1,0,0));
             this.character.setRotate(180);
             if(this.character.getTranslateY() == 0) {
                 this.character.setTranslateY(this.character.getBoundsInLocal().getHeight());
             }else this.character.setTranslateY(0);
-            System.out.println(this.character.getBoundsInLocal().getHeight());
             this.player.flip();
-            System.out.println("here");
         }
-        System.out.println("flipped");
     }
     @FXML
     public void flip(MouseEvent event){
@@ -414,7 +372,6 @@ public class GameplayController {
         this.berryCount.setText(String.valueOf(this.player.getNumBerries()));
     }
     private class GameLoop extends AnimationTimer {
-
         GameplayController g;
         GameLoop(GameplayController gameplayController){
             this.g = gameplayController;
@@ -427,17 +384,8 @@ public class GameplayController {
             Bounds bounds2 = g.berry.getBoundsInParent();
 
             if (g.player.getFlipped() == 1 && bounds1.intersects(bounds2)) {
-                g.collectBerry(); // Render the game
-                System.out.println("Berry collected");
+                g.collectBerry();
             }
         }
-
-//        private void updateGame() {
-//            // Update game logic here
-//        }
-//
-//        private void renderGame() {
-//            // Render the game here
-//        }
     }
 }

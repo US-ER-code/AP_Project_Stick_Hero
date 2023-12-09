@@ -12,8 +12,10 @@ public class Player {
     private int numBerries;
     private int inGame;//1 if in a game 0 if not in game
     private int flipped;//1 if character flipped on a stick, 0 if not flipped
-    private Stick currentStick;
     private Node character;
+    public Node getCharacter() {
+        return character;
+    }
     private PlayerAnimation playerAnimation;
     public Player(Node node){
         this.currentScore = 0;
@@ -23,10 +25,6 @@ public class Player {
         this.flipped = 0;
         this.character = node;
         this.playerAnimation = new PlayerAnimation(node);
-    }
-    public void revive(){
-        this.numBerries -= 10;
-        this.inGame = 1;
     }
 
     public int getInGame() {
@@ -68,38 +66,24 @@ public class Player {
     public void setFlipped(int flipped) {
         this.flipped = flipped;
     }
-    public void flipCharacter(){
-        this.flipped = 1;
-    }
-    public void unFlipCharacter(){
-        this.flipped = 0;
-    }
-
     public void walkStick(Stick stick, Duration duration, Animation onFinish){
         playerAnimation.walkOnStick(stick.getLength(),duration,onFinish);
-
     }
     public void stopWalking() {
         playerAnimation.stopWalking();
     }
-
-
     public void fall(Duration duration, Runnable onFinishedAction){
         //the character falls if the player is unable to build the stick of correct length
         TranslateTransition fallAnimation = new TranslateTransition(duration, this.character);
         fallAnimation.setToY(500);
-        fallAnimation.play();// adjust the Y-coordinate accordingly
+        fallAnimation.play();
         if (onFinishedAction != null) {
             fallAnimation.setOnFinished(event -> onFinishedAction.run());
         }
         fallAnimation.play();
     }
-
     public void collectBerry(){
         this.numBerries++;
-    }
-    public void buildStick(double length){
-        //this.currentStick = new Stick(length);
     }
     public void flip() {
         if(this.flipped == 0){

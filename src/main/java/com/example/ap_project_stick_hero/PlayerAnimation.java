@@ -7,9 +7,8 @@ import javafx.scene.Node;
 import javafx.util.Duration;
 
 public class PlayerAnimation {
-
     private TranslateTransition walkTransition;
-    private Animation onFinishCallback;  // New field for the onFinish callback
+    private Animation onFinishCallback;
     private Node character;
     private boolean isWalking;
     public PlayerAnimation(Node character) {
@@ -18,7 +17,6 @@ public class PlayerAnimation {
         this.character = character;
     }
 
-    // Updated walkOnStick method to accept an onFinish callback
     public void walkOnStick(double stickLength, Duration duration, Animation onFinish) {
         this.isWalking = true;
         walkTransition.setByX(stickLength);
@@ -44,16 +42,10 @@ public class PlayerAnimation {
     public TranslateTransition getWalkTransition() {
         return walkTransition;
     }
-    public void flipCharacter() {
-        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(0.1), this.character);
-        rotateTransition.setByAngle(180);  // Adjust the angle as needed
-        rotateTransition.play();
-    }
 
     public boolean isWalking() {
         return isWalking;
     }
-
     public void setWalking(boolean walking) {
         isWalking = walking;
     }
