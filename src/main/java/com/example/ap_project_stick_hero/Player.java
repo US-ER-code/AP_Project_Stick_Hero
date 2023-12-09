@@ -1,7 +1,10 @@
 package com.example.ap_project_stick_hero;
 
+import javafx.animation.Animation;
+import javafx.animation.TranslateTransition;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.util.Duration;
 
 public class Player {
     private int currentScore;
@@ -11,6 +14,7 @@ public class Player {
     private int flipped;//1 if character flipped on a stick, 0 if not flipped
     private Stick currentStick;
     private Node character;
+    private PlayerAnimation playerAnimation;
     public Player(Node node){
         this.currentScore = 0;
         this.highScore = 0;
@@ -18,6 +22,7 @@ public class Player {
         this.inGame = 1;
         this.flipped = 0;
         this.character = node;
+        this.playerAnimation = new PlayerAnimation(node);
     }
     public void revive(){
         this.numBerries -= 10;
@@ -70,17 +75,24 @@ public class Player {
         this.flipped = 0;
     }
 
-    public void walkStick(){
+    public void walkStick(Stick stick, Duration duration, Animation onFinish){
+        playerAnimation.walkOnStick(stick.getLength(),duration,onFinish);
 
     }
-
-    public void flip(){
-        //flip while walking on stick
-        //will only be called if the character is walking on the stick
+    public void stopWalking() {
+        playerAnimation.stopWalking();
     }
 
-    public void fall(){
+
+    public void fall(Duration duration, Runnable onFinishedAction){
         //the character falls if the player is unable to build the stick of correct length
+        TranslateTransition fallAnimation = new TranslateTransition(duration, this.character);
+        fallAnimation.setToY(500);
+        fallAnimation.play();// adjust the Y-coordinate accordingly
+        if (onFinishedAction != null) {
+            fallAnimation.setOnFinished(event -> onFinishedAction.run());
+        }
+        fallAnimation.play();
     }
 
     public void collectBerry(){
@@ -88,5 +100,11 @@ public class Player {
     }
     public void buildStick(double length){
         //this.currentStick = new Stick(length);
+    }
+    public void flip() {
+        // Flip the character only if it is currently walking
+        if (this.playerAnimation.isWalking()) {
+            this.playerAnimation.flipCharacter();
+        }
     }
 }
